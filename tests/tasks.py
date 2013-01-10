@@ -12,6 +12,10 @@ celery.config_from_object(Config)
 
 from celery_troll_bridge.task import GlobalSemaphoredTask
 
+from .counter import Counter
+
 @celery.task(name='test.dummy_task', base=GlobalSemaphoredTask, global_rate_limit="2/s")
 def dummy_task(text):
-    print text
+    counter = Counter()
+    counter.add()
+    print counter.read()
