@@ -14,16 +14,20 @@ class GlobalSemaphoredTask(Task):
     All task that extends this task implements a global - all works share the same rate_limit
     """
 
-    abstract = True
+    abstract__ = True
 
-    def __init__(self, *args, **kwargs):
+    def _____init__(self, *args, **kwargs):
 
         super(GlobalSemaphoredTask, self).__init__(*args, **kwargs)
 
-        current_app.control.rate_limit(troll.name, self.global_rate_limit)
+        #troll.rate_limit = self.global_rate_limit
+
+        #current_app.control.rate_limit(troll.name, self.global_rate_limit)
 
 
-    def __call__(self, *args, **kwargs):
+    def _____call__(self, *args, **kwargs):
+
+
 
         if 'real' in kwargs:
             real = kwargs.pop('real')

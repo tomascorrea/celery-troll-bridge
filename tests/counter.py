@@ -1,20 +1,27 @@
 # -*- coding: utf-8 -*-
 
 import os
-import pickle
-
-TMP_DATA_PATH = os.path.join(os.path.dirname(__file__), 'tmp_data')
+import pylibmc
 
 
 class Counter(object):
 
-    def __init__(self):
-        self.file = open("%s/counter.pic" % TMP_DATA_PATH, 'w')
+    KEY = 'celery-troll-bridge-test-key'
 
+    def __init__(self):
+        self.mc = pylibmc.Client(["127.0.0.1"], binary=True, behaviors={"tcp_nodelay": True, "ketama": True})
 
     def add(self):
-        pickle.dump(self.read() + 1, self.file)
-
+        try:
+            return self.mc.incr(self.KEY)
+        except pylibmc.NotFound:
+            self.mc.set(self.KEY, 1, time=3600)
+            return 1
 
     def read(self):
-        return pickle.load(self.file)
+        return self.mc.get(self.KEY) or 0
+
+    def reset(self):
+        self.mc.flush_all()
+        self.mc.set(self.KEY, 0, time=3600)
+
